@@ -1,0 +1,456 @@
+def programaCubFreedriveStop63tcp():
+  global _hidden_verificationVariable=0
+  step_count_dde77c25_305d_4635_b251_f944762f7306 = 0.0
+  thread Step_Counter_Thread_fc1e3cff_3f5d_4c86_b9d2_5e095442ce65():
+    while (True):
+      step_count_dde77c25_305d_4635_b251_f944762f7306 = step_count_dde77c25_305d_4635_b251_f944762f7306 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_fc1e3cff_3f5d_4c86_b9d2_5e095442ce65()
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_target_payload(0.000000, [0.000000, 0.000000, 0.000000], [0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000])
+  set_tcp(p[0.0,0.0,0.145,0.0,0.0,0.0])
+  set_safety_mode_transition_hardness(1)
+  set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(0)
+  set_gravity([0.0, 0.0, 9.82])
+  global Plane_1=p[-0.1368615374780743,-0.25928082173531203,0.2504135943406838,-5.2917103496771535E-11,-4.180449287005053E-11,1.570796326752836]
+  global Plane_2=p[-0.1742088076450252,-0.2,0.02622608731903274,1.570796326794897,5.089570548264191E-11,5.41594168576528E-11]
+  global Point_1=p[-0.13686153749022492,-0.3193814880431104,0.3187602624678359,0.5536180370159867,1.9121181481894585,-1.831476432614759]
+  global Point_2=p[-0.13686153751823135,-0.26718082172328733,0.031817929521107666,-0.0012213596567563713,3.11627652848082,0.03889191563370371]
+  $ 63 "Thread_1"
+  thread Thread_1():
+    while (True):
+      $ 64 "Loop"
+      while (True):
+        $ 65 "'Obtenim les posicions del TCP, el toolFlange i el punt del mig.'"
+        # 'Obtenim les posicions del TCP, el toolFlange i el punt del mig.'
+        $ 66 "llistaPosTCP≔get_actual_tcp_pose()"
+        global llistaPosTCP= get_actual_tcp_pose ()
+        $ 67 "llistaPosFlange≔get_actual_tool_flange_pose()"
+        global llistaPosFlange=get_actual_tool_flange_pose()
+        $ 68 "llistaPosMig≔p[(llistaPosTCP[0]+llistaPosFlange[0])/2,(llistaPosTCP[1]+llistaPosFlange[1])/2,(llistaPosTCP[2]+llistaPosFlange[2])/2,llistaPosTCP[3],llistaPosTCP[4],llistaPosTCP[5]]"
+        global llistaPosMig=p[(llistaPosTCP[0]+llistaPosFlange[0])/2,(llistaPosTCP[1]+llistaPosFlange[1])/2,(llistaPosTCP[2]+llistaPosFlange[2])/2,llistaPosTCP[3],llistaPosTCP[4],llistaPosTCP[5]]
+        $ 69 "posX≔llistaPosTCP[0]"
+        global posX=llistaPosTCP[0]
+        $ 70 "posXf≔llistaPosFlange[0]"
+        global posXf=llistaPosFlange[0]
+        $ 71 "posXm≔llistaPosMig[0]"
+        global posXm=llistaPosMig[0]
+        $ 72 "posY≔llistaPosTCP[1]"
+        global posY=llistaPosTCP[1]
+        $ 73 "posYf≔llistaPosFlange[1]"
+        global posYf=llistaPosFlange[1]
+        $ 74 "posYm≔llistaPosMig[1]"
+        global posYm=llistaPosMig[1]
+        $ 75 "posZ≔llistaPosTCP[2]"
+        global posZ=llistaPosTCP[2]
+        $ 76 "posZf≔llistaPosFlange[2]"
+        global posZf=llistaPosFlange[2]
+        $ 77 "posZm≔llistaPosMig[2]"
+        global posZm=llistaPosMig[2]
+        $ 78 "'Comprovem eixos X'"
+        # 'Comprovem eixos X'
+        $ 79 "If posX≥(p1[0]-radiTCP) or posX≤(p2[0]+radiTCP)"
+        global thread_flag_79=0
+        thread Thread_if_79():
+          $ 80 "surtTCP≔ True "
+          global surtTCP=  True  
+          $ 81 "If posX≥(p1[0]-radiTCP)"
+          if (posX >= (p1[0]-radiTCP)):
+            $ 82 "valEix≔0"
+            global valEix=0
+          else:
+            $ 83 "Else" "noBreak"
+            $ 84 "valEix≔10"
+            global valEix=10
+          end
+          thread_flag_79 = 1
+        end
+        if (posX >= (p1[0]-radiTCP)  or  posX <= (p2[0]+radiTCP)):
+          global thread_handler_79=run Thread_if_79()
+          while (thread_flag_79 == 0):
+            if not(posX >= (p1[0]-radiTCP)  or  posX <= (p2[0]+radiTCP)):
+              kill thread_handler_79
+              thread_flag_79 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_79 = 2
+        end
+        $ 85 "If posXf≥(p1[0]-radiFlange) or posXf≤(p2[0]+radiFlange)"
+        global thread_flag_85=0
+        thread Thread_if_85():
+          $ 86 "surtToolFlange≔ True "
+          global surtToolFlange=  True  
+          $ 87 "If posXf≥(p1[0]-radiFlange)"
+          if (posXf >= (p1[0]-radiFlange)):
+            $ 88 "valEix≔0"
+            global valEix=0
+          else:
+            $ 89 "Else" "noBreak"
+            $ 90 "valEix≔10"
+            global valEix=10
+          end
+          thread_flag_85 = 1
+        end
+        if (posXf >= (p1[0]-radiFlange)  or  posXf <= (p2[0]+radiFlange)):
+          global thread_handler_85=run Thread_if_85()
+          while (thread_flag_85 == 0):
+            if not(posXf >= (p1[0]-radiFlange)  or  posXf <= (p2[0]+radiFlange)):
+              kill thread_handler_85
+              thread_flag_85 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_85 = 2
+        end
+        $ 91 "If posXm≥(p1[0]-radiMig) or posXm≤(p2[0]+radiMig)"
+        global thread_flag_91=0
+        thread Thread_if_91():
+          $ 92 "surtMig≔ True "
+          global surtMig=  True  
+          $ 93 "If posXm≥(p1[0]-radiMig)"
+          if (posXm >= (p1[0]-radiMig)):
+            $ 94 "valEix≔0"
+            global valEix=0
+          else:
+            $ 95 "Else" "noBreak"
+            $ 96 "valEix≔10"
+            global valEix=10
+          end
+          thread_flag_91 = 1
+        end
+        if (posXm >= (p1[0]-radiMig)  or  posXm <= (p2[0]+radiMig)):
+          global thread_handler_91=run Thread_if_91()
+          while (thread_flag_91 == 0):
+            if not(posXm >= (p1[0]-radiMig)  or  posXm <= (p2[0]+radiMig)):
+              kill thread_handler_91
+              thread_flag_91 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_91 = 2
+        end
+        $ 97 "'Comprovem eixos Y'"
+        # 'Comprovem eixos Y'
+        $ 98 "If posY≤(p1[1]+radiTCP) or posY≥(p2[1]-radiTCP)"
+        global thread_flag_98=0
+        thread Thread_if_98():
+          $ 99 "surtTCP≔ True "
+          global surtTCP=  True  
+          $ 100 "If posY≤(p1[1]+radiTCP)"
+          if (posY <= (p1[1]+radiTCP)):
+            $ 101 "valEix≔-1"
+            global valEix=-1
+          else:
+            $ 102 "Else" "noBreak"
+            $ 103 "valEix≔1"
+            global valEix=1
+          end
+          thread_flag_98 = 1
+        end
+        if (posY <= (p1[1]+radiTCP)  or  posY >= (p2[1]-radiTCP)):
+          global thread_handler_98=run Thread_if_98()
+          while (thread_flag_98 == 0):
+            if not(posY <= (p1[1]+radiTCP)  or  posY >= (p2[1]-radiTCP)):
+              kill thread_handler_98
+              thread_flag_98 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_98 = 2
+        end
+        $ 104 "If posYf≤(p1[1]+radiFlange) or posYf≥(p2[1]-radiFlange)"
+        global thread_flag_104=0
+        thread Thread_if_104():
+          $ 105 "surtToolFlange≔ True "
+          global surtToolFlange=  True  
+          $ 106 "If posYf≤(p1[1]+radiFlange)"
+          if (posYf <= (p1[1]+radiFlange)):
+            $ 107 "valEix≔-1"
+            global valEix=-1
+          else:
+            $ 108 "Else" "noBreak"
+            $ 109 "valEix≔1"
+            global valEix=1
+          end
+          thread_flag_104 = 1
+        end
+        if (posYf <= (p1[1]+radiFlange)  or  posYf >= (p2[1]-radiFlange)):
+          global thread_handler_104=run Thread_if_104()
+          while (thread_flag_104 == 0):
+            if not(posYf <= (p1[1]+radiFlange)  or  posYf >= (p2[1]-radiFlange)):
+              kill thread_handler_104
+              thread_flag_104 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_104 = 2
+        end
+        $ 110 "If posYm≤(p1[1]+radiMig) or posYm≥(p2[1]-radiMig)"
+        global thread_flag_110=0
+        thread Thread_if_110():
+          $ 111 "surtMig≔ True "
+          global surtMig=  True  
+          $ 112 "If posYm≤(p1[1]+radiMig)"
+          if (posYm <= (p1[1]+radiMig)):
+            $ 113 "valEix≔-1"
+            global valEix=-1
+          else:
+            $ 114 "Else" "noBreak"
+            $ 115 "valEix≔1"
+            global valEix=1
+          end
+          thread_flag_110 = 1
+        end
+        if (posYm <= (p1[1]+radiMig)  or  posYm >= (p2[1]-radiMig)):
+          global thread_handler_110=run Thread_if_110()
+          while (thread_flag_110 == 0):
+            if not(posYm <= (p1[1]+radiMig)  or  posYm >= (p2[1]-radiMig)):
+              kill thread_handler_110
+              thread_flag_110 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_110 = 2
+        end
+        $ 116 "'Comprovem eixos Z'"
+        # 'Comprovem eixos Z'
+        $ 117 "If posZ≥(p1[2]-radiTCP) or posZ≤(p2[2]+radiTCP)"
+        global thread_flag_117=0
+        thread Thread_if_117():
+          $ 118 "surtTCP≔ True "
+          global surtTCP=  True  
+          $ 119 "If posZ≥(p1[2]-radiTCP)"
+          if (posZ >= (p1[2]-radiTCP)):
+            $ 120 "valEix≔2"
+            global valEix=2
+          else:
+            $ 121 "Else" "noBreak"
+            $ 122 "valEix≔-2"
+            global valEix=-2
+          end
+          thread_flag_117 = 1
+        end
+        if (posZ >= (p1[2]-radiTCP)  or  posZ <= (p2[2]+radiTCP)):
+          global thread_handler_117=run Thread_if_117()
+          while (thread_flag_117 == 0):
+            if not(posZ >= (p1[2]-radiTCP)  or  posZ <= (p2[2]+radiTCP)):
+              kill thread_handler_117
+              thread_flag_117 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_117 = 2
+        end
+        $ 123 "If posZf≥(p1[2]-radiFlange) or posZf≤(p2[2]+radiFlange)"
+        global thread_flag_123=0
+        thread Thread_if_123():
+          $ 124 "surtToolFlange≔ True "
+          global surtToolFlange=  True  
+          $ 125 "If posZf≥(p1[2]-radiFlange)"
+          if (posZf >= (p1[2]-radiFlange)):
+            $ 126 "valEix≔2"
+            global valEix=2
+          else:
+            $ 127 "Else" "noBreak"
+            $ 128 "valEix≔-2"
+            global valEix=-2
+          end
+          thread_flag_123 = 1
+        end
+        if (posZf >= (p1[2]-radiFlange)  or  posZf <= (p2[2]+radiFlange)):
+          global thread_handler_123=run Thread_if_123()
+          while (thread_flag_123 == 0):
+            if not(posZf >= (p1[2]-radiFlange)  or  posZf <= (p2[2]+radiFlange)):
+              kill thread_handler_123
+              thread_flag_123 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_123 = 2
+        end
+        $ 129 "If posZm≥(p1[2]-radiMig) or posZm≤(p2[2]+radiMig)"
+        global thread_flag_129=0
+        thread Thread_if_129():
+          $ 130 "surtMig≔ True "
+          global surtMig=  True  
+          $ 131 "If posZm≥(p1[2]-radiMig)"
+          if (posZm >= (p1[2]-radiMig)):
+            $ 132 "valEix≔2"
+            global valEix=2
+          else:
+            $ 133 "Else" "noBreak"
+            $ 134 "valEix≔-2"
+            global valEix=-2
+          end
+          thread_flag_129 = 1
+        end
+        if (posZm >= (p1[2]-radiMig)  or  posZm <= (p2[2]+radiMig)):
+          global thread_handler_129=run Thread_if_129()
+          while (thread_flag_129 == 0):
+            if not(posZm >= (p1[2]-radiMig)  or  posZm <= (p2[2]+radiMig)):
+              kill thread_handler_129
+              thread_flag_129 = 2
+            else:
+              sync()
+            end
+          end
+        else:
+          thread_flag_129 = 2
+        end
+      end
+    end
+  end
+  threadId_Thread_1 = run Thread_1()
+  $ 2 "Robot Program"
+  $ 3 "'Definim les variables surtTCP, surtToolFlange i surtMig com a False per indicar quin surt.'"
+  # 'Definim les variables surtTCP, surtToolFlange i surtMig com a False per indicar quin surt.'
+  $ 4 "surtTCP≔ False "
+  global surtTCP=  False  
+  $ 5 "surtToolFlange≔ False "
+  global surtToolFlange=  False  
+  $ 6 "surtMig≔ False "
+  global surtMig=  False  
+  $ 7 "'Definim la variable per coneixer la paret que s'esta sortint.'"
+  # 'Definim la variable per coneixer la paret que s'esta sortint.'
+  $ 8 "valEix≔11"
+  global valEix=11
+  $ 9 "'Donem valor a la varialbe retrocedir.'"
+  # 'Donem valor a la varialbe retrocedir.'
+  $ 10 "retrocedir≔0.005"
+  global retrocedir=0.005
+  $ 11 "'Definim els radis de les esferes del TCP, el toolFlange i el punt mig.'"
+  # 'Definim els radis de les esferes del TCP, el toolFlange i el punt mig.'
+  $ 12 "radiTCP≔0.05"
+  global radiTCP=0.05
+  $ 13 "radiFlange≔0.06"
+  global radiFlange=0.06
+  $ 14 "radiMig≔0.05"
+  global radiMig=0.05
+  $ 15 "'Agafem els dos punts necessaris per fer un cub perfecte.'"
+  # 'Agafem els dos punts necessaris per fer un cub perfecte.'
+  $ 16 "p1≔p[0.150,-0.483,0.473,0,0,0]"
+  global p1=p[0.150,-0.483,0.473,0,0,0]
+  $ 17 "p2≔p[-0.149,-0.244,0.043,0,0,0]"
+  global p2=p[-0.149,-0.244,0.043,0,0,0]
+  $ 18 "'Activem el moviment lliure.'"
+  # 'Activem el moviment lliure.'
+  $ 19 "freedrive_mode()"
+  freedrive_mode()
+  $ 20 "Loop"
+  while (True):
+    $ 21 "'Surt el TCP, el Flange o el punt mig.'"
+    # 'Surt el TCP, el Flange o el punt mig.'
+    $ 22 "If surtTCP≟ True  or surtToolFlange≟ True  or surtMig≟ True "
+    if (surtTCP ==   True    or  surtToolFlange ==   True    or  surtMig ==   True  ):
+      $ 23 "end_freedrive_mode()"
+      end_freedrive_mode()
+      $ 24 "'Eix X positiu es 0 i el negatiu es 10.'"
+      # 'Eix X positiu es 0 i el negatiu es 10.'
+      $ 25 "If valEix≟0"
+      if (valEix == 0):
+        $ 26 "'ha parat respecte eix X'"
+        # 'ha parat respecte eix X'
+        $ 27 "nouPunt≔pose_add(get_actual_tcp_pose(), p[-retrocedir,0,0,0,0,0])"
+        global nouPunt= pose_add ( get_actual_tcp_pose (), p[-retrocedir,0,0,0,0,0])
+        $ 28 "MoveJ"
+        $ 29 "nouPunt" "breakAfter"
+        movej(nouPunt, a=0.5235987755982988, v=0.3490658503988659)
+      end
+      $ 30 "If valEix≟10"
+      if (valEix == 10):
+        $ 31 "'ha parat respecte eix X -'"
+        # 'ha parat respecte eix X -'
+        $ 32 "nouPunt≔pose_add(get_actual_tcp_pose(), p[retrocedir,0,0,0,0,0])"
+        global nouPunt= pose_add ( get_actual_tcp_pose (), p[retrocedir,0,0,0,0,0])
+        $ 33 "MoveJ"
+        $ 34 "nouPunt" "breakAfter"
+        movej(nouPunt, a=0.5235987755982988, v=0.3490658503988659)
+      end
+      $ 35 "'Eix Y positiu val 1 i si es el negatiu -1'"
+      # 'Eix Y positiu val 1 i si es el negatiu -1'
+      $ 36 "If valEix≟1"
+      if (valEix == 1):
+        $ 37 "'ha parat respecte eix Y'"
+        # 'ha parat respecte eix Y'
+        $ 38 "nouPunt≔pose_add(get_actual_tcp_pose(), p[0,-retrocedir,0,0,0,0])"
+        global nouPunt= pose_add ( get_actual_tcp_pose (), p[0,-retrocedir,0,0,0,0])
+        $ 39 "MoveJ"
+        $ 40 "nouPunt" "breakAfter"
+        movej(nouPunt, a=0.5235987755982988, v=0.3490658503988659)
+      end
+      $ 41 "If valEix≟-1"
+      if (valEix == -1):
+        $ 42 "'ha parat respecte eix Y -'"
+        # 'ha parat respecte eix Y -'
+        $ 43 "nouPunt≔pose_add(get_actual_tcp_pose(), p[0,retrocedir,0,0,0,0])"
+        global nouPunt= pose_add ( get_actual_tcp_pose (), p[0,retrocedir,0,0,0,0])
+        $ 44 "MoveJ"
+        $ 45 "nouPunt" "breakAfter"
+        movej(nouPunt, a=0.5235987755982988, v=0.3490658503988659)
+      end
+      $ 46 "'Eix Z positiu val 2 i si es el negatiu -2 '"
+      # 'Eix Z positiu val 2 i si es el negatiu -2 '
+      $ 47 "If valEix≟2"
+      if (valEix == 2):
+        $ 48 "'ha parat respecte eix Z'"
+        # 'ha parat respecte eix Z'
+        $ 49 "nouPunt≔pose_add(get_actual_tcp_pose(), p[0,0,-retrocedir,0,0,0])"
+        global nouPunt= pose_add ( get_actual_tcp_pose (), p[0,0,-retrocedir,0,0,0])
+        $ 50 "MoveJ"
+        $ 51 "nouPunt" "breakAfter"
+        movej(nouPunt, a=0.5235987755982988, v=0.3490658503988659)
+      end
+      $ 52 "If valEix≟-2"
+      if (valEix == -2):
+        $ 53 "'ha parat respecte eix Z -'"
+        # 'ha parat respecte eix Z -'
+        $ 54 "nouPunt≔pose_add(get_actual_tcp_pose(), p[0,0,retrocedir,0,0,0])"
+        global nouPunt= pose_add ( get_actual_tcp_pose (), p[0,0,retrocedir,0,0,0])
+        $ 55 "MoveJ"
+        $ 56 "nouPunt" "breakAfter"
+        movej(nouPunt, a=0.5235987755982988, v=0.3490658503988659)
+      end
+      $ 57 "'Retornem les variables a False i reactivem el moviment lliure.'"
+      # 'Retornem les variables a False i reactivem el moviment lliure.'
+      $ 58 "surtTCP≔ False "
+      global surtTCP=  False  
+      $ 59 "surtToolFlange≔ False "
+      global surtToolFlange=  False  
+      $ 60 "surtMig≔ False "
+      global surtMig=  False  
+      $ 61 "freedrive_mode()"
+      freedrive_mode()
+    end
+    $ 62 "Wait: 0.01"
+    sleep(0.01)
+  end
+end
