@@ -8,6 +8,7 @@ proporcionaria un nivell més de seguretat, ja que, protegiria els òrgans i tei
 Per tal de poder executar aquest codi, és primordial haver-se descarregat prèviament una màquina virtual amb el simulador fora de línia d’Universal Robots. 
 
 Tenint aquest pas previ, es pot descarregar el codi en format .urp que pot ser obert a partir del simulador fora de línia del cobot UR3e d’Universal Robots.
+
     1. Descarregar el fitxer .urp del repositori.
     2. Col·locar el fitxer descarregat dins la carpeta de fitxers del cobot UR3e de la màquina virtual (**Programs UR3**).
     3. Obrir el programa **URSim UR3**. 
