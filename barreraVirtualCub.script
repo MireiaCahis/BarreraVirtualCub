@@ -1,13 +1,13 @@
-def programaCubFreedriveStop63tcp():
+def barreraVirtualCub():
   global _hidden_verificationVariable=0
-  step_count_dde77c25_305d_4635_b251_f944762f7306 = 0.0
-  thread Step_Counter_Thread_fc1e3cff_3f5d_4c86_b9d2_5e095442ce65():
+  step_count_b7235f0a_cbb2_4c42_8fc8_6f2b845147a7 = 0.0
+  thread Step_Counter_Thread_6ee0f1eb_1164_4362_bee5_6726ac1a9d95():
     while (True):
-      step_count_dde77c25_305d_4635_b251_f944762f7306 = step_count_dde77c25_305d_4635_b251_f944762f7306 + 1.0
+      step_count_b7235f0a_cbb2_4c42_8fc8_6f2b845147a7 = step_count_b7235f0a_cbb2_4c42_8fc8_6f2b845147a7 + 1.0
       sync()
     end
   end
-  run Step_Counter_Thread_fc1e3cff_3f5d_4c86_b9d2_5e095442ce65()
+  run Step_Counter_Thread_6ee0f1eb_1164_4362_bee5_6726ac1a9d95()
   set_standard_analog_input_domain(0, 1)
   set_standard_analog_input_domain(1, 1)
   set_tool_analog_input_domain(0, 1)
@@ -15,15 +15,15 @@ def programaCubFreedriveStop63tcp():
   set_analog_outputdomain(0, 0)
   set_analog_outputdomain(1, 0)
   set_input_actions_to_default()
+  set_safety_mode_transition_hardness(1)
+  set_gravity([0.0, 0.0, 9.82])
   set_target_payload(0.000000, [0.000000, 0.000000, 0.000000], [0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000])
   set_tcp(p[0.0,0.0,0.145,0.0,0.0,0.0])
-  set_safety_mode_transition_hardness(1)
   set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
   set_tool_output_mode(0)
   set_tool_digital_output_mode(0, 1)
   set_tool_digital_output_mode(1, 1)
   set_tool_voltage(0)
-  set_gravity([0.0, 0.0, 9.82])
   global Plane_1=p[-0.1368615374780743,-0.25928082173531203,0.2504135943406838,-5.2917103496771535E-11,-4.180449287005053E-11,1.570796326752836]
   global Plane_2=p[-0.1742088076450252,-0.2,0.02622608731903274,1.570796326794897,5.089570548264191E-11,5.41594168576528E-11]
   global Point_1=p[-0.13686153749022492,-0.3193814880431104,0.3187602624678359,0.5536180370159867,1.9121181481894585,-1.831476432614759]
