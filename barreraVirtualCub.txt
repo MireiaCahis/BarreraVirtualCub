@@ -1,12 +1,10 @@
  Program
-   Variables Setup
+   Init Variables
    Robot Program
      'Definim les variables surtTCP, surtToolFlange i surtMig com a False per indicar quin surt.'
      surtTCP≔ False 
      surtToolFlange≔ False 
      surtMig≔ False 
-     'Definim la variable per coneixer la paret que s'esta sortint.'
-     valEix≔11
      'Donem valor a la varialbe retrocedir.'
      retrocedir≔0.005
      'Definim els radis de les esferes del TCP, el toolFlange i el punt mig.'
@@ -16,51 +14,53 @@
      'Agafem els dos punts necessaris per fer un cub perfecte.'
      p1≔p[0.150,-0.483,0.473,0,0,0]
      p2≔p[-0.149,-0.244,0.043,0,0,0]
+     'Calculem el punt central.'
+     centre≔p[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2,0,0,0]
      'Activem el moviment lliure.'
      freedrive_mode()
      Loop
        'Surt el TCP, el Flange o el punt mig.'
-       If surtTCP≟ True  or surtToolFlange≟ True  or surtMig≟ True 
+       If surtTCP≟ True 
+         'Aturem el moviment lliure.'
          end_freedrive_mode()
-         'Eix X positiu es 0 i el negatiu es 10.'
-         If valEix≟0
-           'ha parat respecte eix X'
-           nouPunt≔pose_add(get_actual_tcp_pose(), p[-retrocedir,0,0,0,0,0])
-           MoveJ
-             nouPunt
-         If valEix≟10
-           'ha parat respecte eix X -'
-           nouPunt≔pose_add(get_actual_tcp_pose(), p[retrocedir,0,0,0,0,0])
-           MoveJ
-             nouPunt
-         'Eix Y positiu val 1 i si es el negatiu -1'
-         If valEix≟1
-           'ha parat respecte eix Y'
-           nouPunt≔pose_add(get_actual_tcp_pose(), p[0,-retrocedir,0,0,0,0])
-           MoveJ
-             nouPunt
-         If valEix≟-1
-           'ha parat respecte eix Y -'
-           nouPunt≔pose_add(get_actual_tcp_pose(), p[0,retrocedir,0,0,0,0])
-           MoveJ
-             nouPunt
-         'Eix Z positiu val 2 i si es el negatiu -2 '
-         If valEix≟2
-           'ha parat respecte eix Z'
-           nouPunt≔pose_add(get_actual_tcp_pose(), p[0,0,-retrocedir,0,0,0])
-           MoveJ
-             nouPunt
-         If valEix≟-2
-           'ha parat respecte eix Z -'
-           nouPunt≔pose_add(get_actual_tcp_pose(), p[0,0,retrocedir,0,0,0])
-           MoveJ
-             nouPunt
+         'Obtenim la posicio actual del TCP.'
+         posAct≔get_actual_tcp_pose()
+         'Cridem el subprograma per rectificar la posicio.'
+         Call rectificarPosicio
          'Retornem les variables a False i reactivem el moviment lliure.'
          surtTCP≔ False 
+       If surtToolFlange≟ True 
+         'Aturem el moviment lliure.'
+         end_freedrive_mode()
+         'Obtenim la posicio actual de la brida del robot.'
+         posAct≔get_actual_tool_flange_pose()
+         'Cridem el subprograma per rectificar la posicio.'
+         Call rectificarPosicio
+         'Retornem les variables a False i reactivem el moviment lliure.'
          surtToolFlange≔ False 
+       If surtMig≟ True 
+         'Aturem el moviment lliure.'
+         end_freedrive_mode()
+         'Obtenim les posicions actuals de la brida i el TCP per calcular el punt del mig.'
+         tcpAct≔get_actual_tcp_pose()
+         flangeAct≔get_actual_tool_flange_pose()
+         posAct≔p[(tcpAct[0]+flangeAct[0])/2,(tcpAct[1]+flangeAct[1])/2,(tcpAct[2]+flangeAct[2])/2,tcpAct[3],tcpAct[4],tcpAct[5]]
+         'Cridem el subprograma per rectificar la posicio.'
+         Call rectificarPosicio
+         'Retornem les variables a False i reactivem el moviment lliure.'
          surtMig≔ False 
-         freedrive_mode()
        Wait: 0.01
+   rectificarPosicio
+     'Subprograma cridat per tal de fer un moviment amb una direccio.'
+     'Abans de cridar el subprograma s'ha d'haver obtingut el valor de la posicio actual.'
+     'Generem el vector director del punt actual al centre.'
+     vectorDir≔[centre[0]-posAct[0],centre[1]-posAct[1],centre[2]-posAct[2]]
+     'Ens movem en direccio el centre fins que s'hagi recorregut una distancia determinada.'
+     MoveL
+       Direction: Base
+         Until (distance)
+     'Tornem a activar el moviment lliure.'
+     freedrive_mode()
    Thread_1
      Loop
        'Obtenim les posicions del TCP, el toolFlange i el punt del mig.'
@@ -79,57 +79,21 @@
        'Comprovem eixos X'
        If posX≥(p1[0]-radiTCP) or posX≤(p2[0]+radiTCP)
          surtTCP≔ True 
-         If posX≥(p1[0]-radiTCP)
-           valEix≔0
-         Else
-           valEix≔10
        If posXf≥(p1[0]-radiFlange) or posXf≤(p2[0]+radiFlange)
          surtToolFlange≔ True 
-         If posXf≥(p1[0]-radiFlange)
-           valEix≔0
-         Else
-           valEix≔10
        If posXm≥(p1[0]-radiMig) or posXm≤(p2[0]+radiMig)
          surtMig≔ True 
-         If posXm≥(p1[0]-radiMig)
-           valEix≔0
-         Else
-           valEix≔10
        'Comprovem eixos Y'
        If posY≤(p1[1]+radiTCP) or posY≥(p2[1]-radiTCP)
          surtTCP≔ True 
-         If posY≤(p1[1]+radiTCP)
-           valEix≔-1
-         Else
-           valEix≔1
        If posYf≤(p1[1]+radiFlange) or posYf≥(p2[1]-radiFlange)
          surtToolFlange≔ True 
-         If posYf≤(p1[1]+radiFlange)
-           valEix≔-1
-         Else
-           valEix≔1
        If posYm≤(p1[1]+radiMig) or posYm≥(p2[1]-radiMig)
          surtMig≔ True 
-         If posYm≤(p1[1]+radiMig)
-           valEix≔-1
-         Else
-           valEix≔1
        'Comprovem eixos Z'
        If posZ≥(p1[2]-radiTCP) or posZ≤(p2[2]+radiTCP)
          surtTCP≔ True 
-         If posZ≥(p1[2]-radiTCP)
-           valEix≔2
-         Else
-           valEix≔-2
        If posZf≥(p1[2]-radiFlange) or posZf≤(p2[2]+radiFlange)
          surtToolFlange≔ True 
-         If posZf≥(p1[2]-radiFlange)
-           valEix≔2
-         Else
-           valEix≔-2
        If posZm≥(p1[2]-radiMig) or posZm≤(p2[2]+radiMig)
          surtMig≔ True 
-         If posZm≥(p1[2]-radiMig)
-           valEix≔2
-         Else
-           valEix≔-2
