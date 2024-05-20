@@ -1,19 +1,17 @@
  Program
-   Init Variables
+   Variables Setup
    Robot Program
      'Definim les variables surtTCP, surtToolFlange i surtMig com a False per indicar quin surt.'
      surtTCP≔ False 
      surtToolFlange≔ False 
      surtMig≔ False 
-     'Donem valor a la varialbe retrocedir.'
-     retrocedir≔0.005
      'Definim els radis de les esferes del TCP, el toolFlange i el punt mig.'
-     radiTCP≔0.05
-     radiFlange≔0.06
-     radiMig≔0.05
+     radiTCP≔0.02
+     radiFlange≔0.02
+     radiMig≔0.02
      'Agafem els dos punts necessaris per fer un cub perfecte.'
-     p1≔p[0.150,-0.483,0.473,0,0,0]
-     p2≔p[-0.149,-0.244,0.043,0,0,0]
+     p1≔p[0.119,-0.546,0.484,0,0,0]
+     p2≔p[-0.241,-0.190,0.133,0,0,0]
      'Calculem el punt central.'
      centre≔p[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2,(p1[2]+p2[2])/2,0,0,0]
      'Activem el moviment lliure.'
@@ -24,6 +22,8 @@
          'Aturem el moviment lliure.'
          end_freedrive_mode()
          'Obtenim la posicio actual del TCP.'
+         Set DO[0]=On
+         Set Payload: Payload_TCPEina 0.0s
          posAct≔get_actual_tcp_pose()
          'Cridem el subprograma per rectificar la posicio.'
          Call rectificarPosicio
@@ -32,8 +32,10 @@
        If surtToolFlange≟ True 
          'Aturem el moviment lliure.'
          end_freedrive_mode()
-         'Obtenim la posicio actual de la brida del robot.'
-         posAct≔get_actual_tool_flange_pose()
+         'Obtenim la posicio actual del cap de l eina.'
+         Set DO[0]=On
+         Set Payload: Payload_CapEina 0.0s
+         posAct≔get_actual_tcp_pose()
          'Cridem el subprograma per rectificar la posicio.'
          Call rectificarPosicio
          'Retornem les variables a False i reactivem el moviment lliure.'
@@ -42,8 +44,12 @@
          'Aturem el moviment lliure.'
          end_freedrive_mode()
          'Obtenim les posicions actuals de la brida i el TCP per calcular el punt del mig.'
+         Set DO[0]=On
+         Set Payload: Payload_TCPEina 0.0s
          tcpAct≔get_actual_tcp_pose()
-         flangeAct≔get_actual_tool_flange_pose()
+         Set DO[0]=On
+         Set Payload: Payload_CapEina 0.0s
+         flangeAct≔get_actual_tcp_pose()
          posAct≔p[(tcpAct[0]+flangeAct[0])/2,(tcpAct[1]+flangeAct[1])/2,(tcpAct[2]+flangeAct[2])/2,tcpAct[3],tcpAct[4],tcpAct[5]]
          'Cridem el subprograma per rectificar la posicio.'
          Call rectificarPosicio
@@ -55,6 +61,8 @@
      'Abans de cridar el subprograma s'ha d'haver obtingut el valor de la posicio actual.'
      'Generem el vector director del punt actual al centre.'
      vectorDir≔[centre[0]-posAct[0],centre[1]-posAct[1],centre[2]-posAct[2]]
+     'Donem marge de temps per pesar al software.'
+     Wait: 0.01
      'Ens movem en direccio el centre fins que s'hagi recorregut una distancia determinada.'
      MoveL
        Direction: Base
@@ -62,38 +70,33 @@
      'Tornem a activar el moviment lliure.'
      freedrive_mode()
    Thread_1
-     Loop
-       'Obtenim les posicions del TCP, el toolFlange i el punt del mig.'
-       llistaPosTCP≔get_actual_tcp_pose()
-       llistaPosFlange≔get_actual_tool_flange_pose()
-       llistaPosMig≔p[(llistaPosTCP[0]+llistaPosFlange[0])/2,(llistaPosTCP[1]+llistaPosFlange[1])/2,(llistaPosTCP[2]+llistaPosFlange[2])/2,llistaPosTCP[3],llistaPosTCP[4],llistaPosTCP[5]]
-       posX≔llistaPosTCP[0]
-       posXf≔llistaPosFlange[0]
-       posXm≔llistaPosMig[0]
-       posY≔llistaPosTCP[1]
-       posYf≔llistaPosFlange[1]
-       posYm≔llistaPosMig[1]
-       posZ≔llistaPosTCP[2]
-       posZf≔llistaPosFlange[2]
-       posZm≔llistaPosMig[2]
-       'Comprovem eixos X'
-       If posX≥(p1[0]-radiTCP) or posX≤(p2[0]+radiTCP)
-         surtTCP≔ True 
-       If posXf≥(p1[0]-radiFlange) or posXf≤(p2[0]+radiFlange)
-         surtToolFlange≔ True 
-       If posXm≥(p1[0]-radiMig) or posXm≤(p2[0]+radiMig)
-         surtMig≔ True 
-       'Comprovem eixos Y'
-       If posY≤(p1[1]+radiTCP) or posY≥(p2[1]-radiTCP)
-         surtTCP≔ True 
-       If posYf≤(p1[1]+radiFlange) or posYf≥(p2[1]-radiFlange)
-         surtToolFlange≔ True 
-       If posYm≤(p1[1]+radiMig) or posYm≥(p2[1]-radiMig)
-         surtMig≔ True 
-       'Comprovem eixos Z'
-       If posZ≥(p1[2]-radiTCP) or posZ≤(p2[2]+radiTCP)
-         surtTCP≔ True 
-       If posZf≥(p1[2]-radiFlange) or posZf≤(p2[2]+radiFlange)
-         surtToolFlange≔ True 
-       If posZm≥(p1[2]-radiMig) or posZm≤(p2[2]+radiMig)
-         surtMig≔ True 
+     'Obtenim les posicions del TCP, el toolFlange i el punt del mig.'
+     Set DO[0]=On
+     Set Payload: Payload_TCPEina 0.0s
+     llistaPosTCP≔get_actual_tcp_pose()
+     Set DO[0]=On
+     Set Payload: Payload_CapEina 0.0s
+     llistaPosFlange≔get_actual_tcp_pose()
+     llistaPosMig≔p[(llistaPosTCP[0]+llistaPosFlange[0])/2,(llistaPosTCP[1]+llistaPosFlange[1])/2,(llistaPosTCP[2]+llistaPosFlange[2])/2,llistaPosTCP[3],llistaPosTCP[4],llistaPosTCP[5]]
+     'Comprovem eixos X'
+     If llistaPosTCP[0]≥(p1[0]-radiTCP) or llistaPosTCP[0]≤(p2[0]+radiTCP)
+       surtTCP≔ True 
+     If llistaPosFlange[0]≥(p1[0]-radiFlange) or llistaPosFlange[0]≤(p2[0]+radiFlange)
+       surtToolFlange≔ True 
+     If llistaPosMig[0]≥(p1[0]-radiMig) or llistaPosMig[0]≤(p2[0]+radiMig)
+       surtMig≔ True 
+     'Comprovem eixos Y'
+     If llistaPosTCP[1]≤(p1[1]+radiTCP) or llistaPosTCP[1]≥(p2[1]-radiTCP)
+       surtTCP≔ True 
+     If llistaPosFlange[1]≤(p1[1]+radiFlange) or llistaPosFlange[1]≥(p2[1]-radiFlange)
+       surtToolFlange≔ True 
+     If llistaPosMig[1]≤(p1[1]+radiMig) or llistaPosMig[1]≥(p2[1]-radiMig)
+       surtMig≔ True 
+     'Comprovem eixos Z'
+     If llistaPosTCP[2]≥(p1[2]-radiTCP) or llistaPosTCP[2]≤(p2[2]+radiTCP)
+       surtTCP≔ True 
+     If llistaPosFlange[2]≥(p1[2]-radiFlange) or llistaPosFlange[2]≤(p2[2]+radiFlange)
+       surtToolFlange≔ True 
+     If llistaPosMig[2]≥(p1[2]-radiMig) or llistaPosMig[2]≤(p2[2]+radiMig)
+       surtMig≔ True 
+     Wait: 0.01
